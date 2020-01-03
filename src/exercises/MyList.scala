@@ -22,6 +22,9 @@ abstract class MyList[+A] {
 //  def flatMap[B](transformer: MyTransformer[A,MyList[B]]): MyList[B]
   def filter(predicate: MyPredicate[A]):MyList[A]
 
+  // hofs
+  def foreach(f: A => Unit):Unit
+
 }
 
 object Empty extends MyList[Nothing] {
@@ -33,6 +36,9 @@ object Empty extends MyList[Nothing] {
   def map[B](transformer: MyTransformer[Nothing,B]):MyList[B] = Empty
 //  def flatMap[B](transformer: MyTransformer[Nothing,MyList[B]]): MyList[B] = Empty
   def filter(predicate: MyPredicate[Nothing]):MyList[Nothing] = Empty
+
+  //hofs
+  override def foreach(f: Nothing => Unit): Unit = ()
 }
 
 class Cons[+A](h:A , t:MyList[A]) extends MyList[A]{
@@ -52,6 +58,12 @@ class Cons[+A](h:A , t:MyList[A]) extends MyList[A]{
   def map[B](transformer: MyTransformer[A,B]):MyList[B] = {
     new Cons(transformer.transform(h), t.map(transformer))
   }
+
+  //hofs
+  override def foreach(f: A => Unit): Unit = {
+    f(h)
+    t.foreach(f)
+  }
 }
 
 trait MyPredicate[-T]{
@@ -68,12 +80,14 @@ object ListTest extends App{
 //  println(list.tail.tail.head)
 //  println(list.add(4))
 
-  println(list.toString)
-  println(list2.toString)
+//  println(list.toString)
+//  println(list2.toString)
 
-  println(list.map(new MyTransformer[Int,Int] {
-    override def transform(elem: Int): Int = elem*2
-  }))
+//  println(list.map(new MyTransformer[Int,Int] {
+//    override def transform(elem: Int): Int = elem*2
+//  }))
+
+  list.foreach(println)
 }
 
 
